@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WS1 Issue Tree — Group Orion · AperioHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ─── Tokens ──────────────────────────────────────────────────────── */
+:root {
+  --bg:           #F8F7F4;
+  --bg-white:     #FFFFFF;
+  --bg-surface:   #F2F0EC;
+  --bg-raised:    #ECEAE5;
+
+  --accent:       #8B5E3C;       /* warm chestnut brown */
+  --accent-light: #C4915A;
+  --accent-bg:    #FAF3EC;
+  --accent-border:#E8D5C0;
+
+  --text-primary:   #1A1915;
+  --text-secondary: #4A4842;
+  --text-muted:     #888480;
+  --text-accent:    #7A4F2C;
+
+  --border:       #DDD9D2;
+  --border-light: #E8E5DF;
+
+  /* Branch colors — muted, professional */
+  --a-color:  #2D6A9F;  --a-bg: #EBF3FB;  --a-border: #B8D4EE;
+  --b-color:  #2A7A5A;  --b-bg: #E8F5EF;  --b-border: #A8D9C0;
+  --c-color:  #8B5E3C;  --c-bg: #FAF3EC;  --c-border: #E8D5C0;
+  --d-color:  #5E3D8B;  --d-bg: #F3EEFA;  --d-border: #D5C0E8;
+  --e-color:  #8B3D3D;  --e-bg: #FAEEEE;  --e-border: #E8C0C0;
+
+  /* WS chips */
+  --ws1: #2D6A9F; --ws1-bg: #EBF3FB;
+  --ws2: #2A7A5A; --ws2-bg: #E8F5EF;
+  --ws3: #7A6D2A; --ws3-bg: #F5F1E8;
+  --ws4: #5E3D8B; --ws4-bg: #F3EEFA;
+
+  --font: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ─── Reset ───────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Layout ──────────────────────────────────────────────────────── */
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+/* ─── Header ──────────────────────────────────────────────────────── */
+.site-header {
+  background: var(--bg-white);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 200;
+}
+.site-header .wrap {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px; gap: 16px;
+}
+.header-brand {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.header-divider { width: 1px; height: 16px; background: var(--border); }
+.header-title { font-size: 0.9rem; font-weight: 500; color: var(--text-secondary); }
+.header-meta { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ─── Branch nav ──────────────────────────────────────────────────── */
+.branch-nav {
+  background: var(--bg-white);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 56px; z-index: 190;
+}
+.branch-nav .wrap {
+  display: flex; align-items: center; gap: 4px;
+  height: 44px; overflow-x: auto; scrollbar-width: none;
+}
+.branch-nav .wrap::-webkit-scrollbar { display: none; }
+.nav-label {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-muted); white-space: nowrap;
+  margin-right: 8px; flex-shrink: 0;
+}
+.nav-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 100px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-secondary); font-size: 0.8rem; font-weight: 500;
+  font-family: var(--font); cursor: pointer; white-space: nowrap;
+  transition: background 140ms var(--ease), color 140ms var(--ease), border-color 140ms var(--ease);
+}
+.nav-btn:hover { background: var(--bg-surface); color: var(--text-primary); border-color: var(--border-light); }
+.nav-btn:active { transform: scale(0.97); }
+.nav-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─── Hero ────────────────────────────────────────────────────────── */
+.hero {
+  padding: 56px 0 48px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-white);
+}
+.hero-eyebrow {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 18px;
+}
+.tag {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 9px; border-radius: 100px;
+  border: 1px solid var(--accent-border); background: var(--accent-bg);
+  color: var(--text-accent);
+}
+.hero h1 {
+  font-size: 2.4rem; font-weight: 700; letter-spacing: -0.03em;
+  line-height: 1.15; margin-bottom: 12px; max-width: 700px;
+}
+.hero h1 em { color: var(--accent); font-style: normal; }
+.hero-desc {
+  font-size: 1rem; color: var(--text-secondary);
+  max-width: 580px; margin-bottom: 32px; line-height: 1.65;
+}
+
+/* Central question */
+.cq-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--accent); border-radius: var(--radius);
+  padding: 20px 24px; max-width: 820px;
+}
+.cq-label {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-accent); margin-bottom: 8px;
+}
+.cq-text {
+  font-size: 1rem; font-weight: 500; color: var(--text-primary); line-height: 1.6;
+}
+
+/* Sub-question row */
+.sub-qs {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px; margin-top: 24px; max-width: 820px;
+}
+.sub-q {
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 18px;
+}
+.sub-q-num {
+  font-size: 1.6rem; font-weight: 700; color: var(--accent-light);
+  line-height: 1; margin-bottom: 4px;
+}
+.sub-q-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+.sub-q-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+
+/* ─── Main content ────────────────────────────────────────────────── */
+.main { padding: 48px 0 80px; }
+.branch-section { margin-bottom: 64px; }
+
+/* Branch header */
+.branch-header {
+  display: flex; align-items: flex-start; gap: 14px;
+  margin-bottom: 20px; padding-bottom: 16px;
+  border-bottom: 2px solid var(--border);
+}
+.branch-letter {
+  width: 40px; height: 40px; border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; font-weight: 800; flex-shrink: 0;
+}
+.branch-meta { flex: 1; }
+.branch-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 2px; }
+.branch-subtitle { font-size: 0.82rem; color: var(--text-muted); }
+.branch-ws { display: flex; gap: 4px; flex-shrink: 0; margin-top: 4px; }
+.ws-chip {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em;
+  padding: 2px 8px; border-radius: 100px; border: 1px solid transparent;
+}
+
+/* ─── Branch color assignments ────────────────────────────────────── */
+.branch-a .branch-letter { background: var(--a-bg); color: var(--a-color); }
+.branch-b .branch-letter { background: var(--b-bg); color: var(--b-color); }
+.branch-c .branch-letter { background: var(--c-bg); color: var(--c-color); }
+.branch-d .branch-letter { background: var(--d-bg); color: var(--d-color); }
+.branch-e .branch-letter { background: var(--e-bg); color: var(--e-color); }
+
+/* ─── Decision flowchart area ─────────────────────────────────────── */
+.flowchart-wrap {
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px;
+  margin-bottom: 24px; overflow-x: auto;
+}
+.flowchart-label {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 16px;
+}
+.flowchart-wrap svg { display: block; min-width: 560px; }
+
+/* ─── L1 accordion cards ──────────────────────────────────────────── */
+.l1-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 10px; }
+.l1-card {
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  transition: box-shadow 140ms var(--ease);
+}
+.l1-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.l1-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; cursor: pointer; user-select: none;
+}
+.l1-code {
+  font-size: 0.72rem; font-weight: 800; font-family: monospace;
+  flex-shrink: 0; width: 28px;
+}
+.l1-question { font-size: 0.88rem; font-weight: 600; flex: 1; line-height: 1.45; color: var(--text-primary); }
+.l1-chevron {
+  color: var(--text-muted); font-size: 0.75rem; flex-shrink: 0;
+  transition: transform 200ms var(--ease);
+}
+.l1-card.open .l1-chevron { transform: rotate(180deg); }
+.l1-body {
+  display: none; padding: 4px 16px 16px 54px;
+  border-top: 1px solid var(--border-light);
+}
+.l1-card.open .l1-body { display: block; }
+
+/* ─── L2 items inside cards ───────────────────────────────────────── */
+.l2 { margin-top: 12px; }
+.l2-code {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 3px;
+  font-family: monospace;
+}
+.l2-q { font-size: 0.82rem; font-weight: 500; color: var(--text-secondary); line-height: 1.5; margin-bottom: 5px; }
+.leaf-list { list-style: none; padding: 0; }
+.leaf-list li {
+  font-size: 0.78rem; color: var(--text-muted); line-height: 1.55;
+  padding: 3px 0 3px 12px; border-left: 2px solid var(--border);
+  margin-bottom: 2px;
+}
+.ws {
+  display: inline-block; font-size: 0.62rem; font-weight: 700;
+  padding: 1px 5px; border-radius: 3px; margin-left: 4px;
+  vertical-align: middle; font-family: monospace;
+}
+.ws1 { color: var(--ws1); background: var(--ws1-bg); }
+.ws2 { color: var(--ws2); background: var(--ws2-bg); }
+.ws3 { color: var(--ws3); background: var(--ws3-bg); }
+.ws4 { color: var(--ws4); background: var(--ws4-bg); }
+.ws-chip.ws1 { border-color: #B8D4EE; }
+.ws-chip.ws2 { border-color: #A8D9C0; }
+.ws-chip.ws3 { border-color: #D9D1A8; }
+.ws-chip.ws4 { border-color: #D5C0E8; }
+
+/* ─── WS map table ────────────────────────────────────────────────── */
+.ws-map {
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 28px 32px; margin-top: 48px;
+}
+.ws-map h3 {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 18px;
+}
+.ws-table { width: 100%; border-collapse: collapse; }
+.ws-table th {
+  text-align: left; font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);
+  padding: 0 12px 10px 0; border-bottom: 1px solid var(--border);
+}
+.ws-table td {
+  font-size: 0.85rem; padding: 11px 12px 11px 0;
+  border-bottom: 1px solid var(--border-light); color: var(--text-secondary);
+  vertical-align: top;
+}
+.ws-table tr:last-child td { border-bottom: none; }
+.ws-table td:first-child { width: 56px; font-weight: 700; }
+.ws-table td:nth-child(2) { width: 220px; }
+
+/* ─── Footer ──────────────────────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--border); background: var(--bg-white);
+  padding: 22px 0;
+}
+.site-footer .wrap { display: flex; justify-content: space-between; align-items: center; }
+.footer-text { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ─── Animations ──────────────────────────────────────────────────── */
+.branch-section {
+  opacity: 0; transform: translateY(10px);
+  animation: rise 380ms var(--ease) forwards;
+}
+.branch-section:nth-child(1) { animation-delay: 30ms; }
+.branch-section:nth-child(2) { animation-delay: 90ms; }
+.branch-section:nth-child(3) { animation-delay: 150ms; }
+.branch-section:nth-child(4) { animation-delay: 210ms; }
+.branch-section:nth-child(5) { animation-delay: 270ms; }
+@keyframes rise { to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .branch-section { animation: none; opacity: 1; transform: none; }
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .wrap { padding: 0 16px; }
+  .hero h1 { font-size: 1.6rem; }
+  .sub-qs { grid-template-columns: 1fr; }
+  .l1-grid { grid-template-columns: 1fr; }
+  .branch-nav { top: 56px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="wrap">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="header-brand">AperioHub</span>
+      <div class="header-divider"></div>
+      <span class="header-title">Group Orion · WS1 Issue Tree</span>
+    </div>
+    <span class="header-meta">Updated June 19, 2026</span>
+  </div>
+</header>
+
+<!-- ── Branch nav ─────────────────────────────────────────────────── -->
+<nav class="branch-nav" id="top-nav">
+  <div class="wrap">
+    <span class="nav-label">Branches</span>
+    <button class="nav-btn" onclick="jumpTo('branch-a')">
+      <span class="nav-dot" style="background:var(--a-color)"></span>A — US Opportunity
+    </button>
+    <button class="nav-btn" onclick="jumpTo('branch-b')">
+      <span class="nav-dot" style="background:var(--b-color)"></span>B — upGrad Capability
+    </button>
+    <button class="nav-btn" onclick="jumpTo('branch-c')">
+      <span class="nav-dot" style="background:var(--c-color)"></span>C — JV Structure
+    </button>
+    <button class="nav-btn" onclick="jumpTo('branch-d')">
+      <span class="nav-dot" style="background:var(--d-color)"></span>D — If Invest
+    </button>
+    <button class="nav-btn" onclick="jumpTo('branch-e')">
+      <span class="nav-dot" style="background:var(--e-color)"></span>E — If Pass
+    </button>
+  </div>
+</nav>
+
+<!-- ── Hero ───────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow">
+      <span class="tag">WS1 · Issue Tree</span>
+      <span style="color:var(--border);font-size:1rem">/</span>
+      <span style="font-size:0.82rem;color:var(--text-muted)">Role 3 — Dylan &amp; Ari</span>
+    </div>
+    <h1>Issue Tree + Central Question</h1>
+    <p class="hero-desc">A structured investment and market-entry assessment for the Singapore fund's proposed JV with upGrad.</p>
+
+    <div class="cq-card">
+      <div class="cq-label">Central Question</div>
+      <p class="cq-text">Should the Singapore fund invest in a JV with upGrad to enter the US professional upskilling market, and if so, in which segment, through which entry model, on what timeline, and under what milestone conditions should capital be committed or withheld?</p>
+    </div>
+
+    <div class="sub-qs">
+      <div class="sub-q">
+        <div class="sub-q-num">01</div>
+        <div class="sub-q-label">Entry Viability</div>
+        <p class="sub-q-desc">Is the US opportunity real and accessible to this archetype of player?</p>
+      </div>
+      <div class="sub-q">
+        <div class="sub-q-num">02</div>
+        <div class="sub-q-label">Entry Strategy</div>
+        <p class="sub-q-desc">If accessible, what is the optimal path across segment, model, and partner role?</p>
+      </div>
+      <div class="sub-q">
+        <div class="sub-q-num">03</div>
+        <div class="sub-q-label">Investment Decision</div>
+        <p class="sub-q-desc">Given viability and strategy, does the JV structure make financial sense for the fund?</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Main ───────────────────────────────────────────────────────── -->
+<main class="main">
+<div class="wrap">
+
+<!-- ════════════════════════════════════════════════════════════
+     BRANCH A
+     ══════════════════════════════════════════════════════════ -->
+<section class="branch-section branch-a" id="branch-a">
+  <div class="branch-header">
+    <div class="branch-letter">A</div>
+    <div class="branch-meta">
+      <div class="branch-title" style="color:var(--a-color)">Is the US Opportunity Real?</div>
+      <div class="branch-subtitle">Entry Viability · Market size, structural accessibility, and comparable entrant precedent</div>
+    </div>
+    <div class="branch-ws">
+      <span class="ws-chip ws2">WS2</span>
+      <span class="ws-chip ws3">WS3</span>
+    </div>
+  </div>
+
+  <!-- Flowchart A -->
+  <div class="flowchart-wrap">
+    <div class="flowchart-label">Branch A</div>
+    <!--
+      Layout (horizontal left-to-right):
+      Col 0 (x=10):   Root "Branch A"
+      Col 1 (x=220):  A1, A2, A3
+      Col 2 (x=490):  A1a/b/c under A1 | A2a/b/c/d under A2 | A3a/b/c/d under A3
+    -->
+    <svg viewBox="0 0 860 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+      <defs>
+        <marker id="arA" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto">
+          <path d="M0,0 L0,5 L7,2.5 z" fill="#2D6A9F"/>
+        </marker>
+      </defs>
+      <!-- ROOT -->
+      <rect x="10" y="220" width="180" height="50" rx="7" fill="#2D6A9F" stroke="none"/>
+      <text x="100" y="240" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#fff">Branch A</text>
+      <text x="100" y="258" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#c8ddf0">Is the US opportunity real?</text>
+
+      <!-- Root → L1 trunk line -->
+      <line x1="190" y1="245" x2="218" y2="245" stroke="#2D6A9F" stroke-width="1.5"/>
+      <!-- Vertical trunk -->
+      <line x1="218" y1="60" x2="218" y2="460" stroke="#2D6A9F" stroke-width="1.5"/>
+
+      <!-- ── A1 ── -->
+      <line x1="218" y1="60" x2="246" y2="60" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="248" y="38" width="200" height="44" rx="7" fill="#EBF3FB" stroke="#2D6A9F" stroke-width="1.5"/>
+      <text x="348" y="56" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#2D6A9F">A1 — Market Size</text>
+      <text x="348" y="73" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Is the market large enough?</text>
+
+      <!-- A1 → children trunk -->
+      <line x1="448" y1="60" x2="468" y2="60" stroke="#2D6A9F" stroke-width="1.5"/>
+      <line x1="468" y1="22" x2="468" y2="108" stroke="#2D6A9F" stroke-width="1.5"/>
+      <!-- A1a -->
+      <line x1="468" y1="22" x2="490" y2="22" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="492" y="10" width="358" height="26" rx="5" fill="#EBF3FB" stroke="#B8D4EE" stroke-width="1"/>
+      <text x="671" y="27" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">A1a — TAM: size and growth trajectory of US professional upskilling</text>
+      <!-- A1b -->
+      <line x1="468" y1="60" x2="490" y2="60" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="492" y="48" width="358" height="26" rx="5" fill="#EBF3FB" stroke="#B8D4EE" stroke-width="1"/>
+      <text x="671" y="65" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">A1b — SAM: working-professional degree/upskilling segment size</text>
+      <!-- A1c -->
+      <line x1="468" y1="108" x2="490" y2="108" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="492" y="96" width="358" height="26" rx="5" fill="#EBF3FB" stroke="#B8D4EE" stroke-width="1"/>
+      <text x="671" y="111" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">A1c — SOM: realistic capture in Years 1-3 given competition</text>
+
+      <!-- ── A2 ── -->
+      <line x1="218" y1="245" x2="246" y2="245" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="248" y="223" width="200" height="44" rx="7" fill="#EBF3FB" stroke="#2D6A9F" stroke-width="1.5"/>
+      <text x="348" y="241" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#2D6A9F">A2 — Accessibility</text>
+      <text x="348" y="258" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Is the market structurally open?</text>
+
+      <!-- A2 → children trunk -->
+      <line x1="448" y1="245" x2="468" y2="245" stroke="#2D6A9F" stroke-width="1.5"/>
+      <line x1="468" y1="167" x2="468" y2="339" stroke="#2D6A9F" stroke-width="1.5"/>
+      <!-- A2a -->
+      <line x1="468" y1="167" x2="490" y2="167" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="492" y="155" width="358" height="26" rx="5" fill="#EBF3FB" stroke="#B8D4EE" stroke-width="1"/>
+      <text x="671" y="172" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">A2a — Accreditation: DEAC, regional, or US university co-delivery path</text>
+      <!-- A2b -->
+      <line x1="468" y1="219" x2="490" y2="219" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="492" y="207" width="358" height="26" rx="5" fill="#EBF3FB" stroke="#B8D4EE" stroke-width="1"/>
+      <text x="671" y="224" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">A2b — CAC economics: is CAC/LTV viable within 3 years?</text>
+      <!-- A2c -->
+      <line x1="468" y1="271" x2="490" y2="271" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="492" y="259" width="358" height="26" rx="5" fill="#EBF3FB" stroke="#B8D4EE" stroke-width="1"/>
+      <text x="671" y="276" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">A2c — Brand trust: "Indian edtech" perception post-BYJU's</text>
+      <!-- A2d -->
+      <line x1="468" y1="339" x2="490" y2="339" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="492" y="327" width="358" height="26" rx="5" fill="#EBF3FB" stroke="#B8D4EE" stroke-width="1"/>
+      <text x="671" y="344" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">A2d — Incumbent density: moats, switching costs, competitive gaps</text>
+
+      <!-- ── A3 ── -->
+      <line x1="218" y1="420" x2="246" y2="420" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="248" y="398" width="200" height="44" rx="7" fill="#EBF3FB" stroke="#2D6A9F" stroke-width="1.5"/>
+      <text x="348" y="416" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#2D6A9F">A3 — Precedent</text>
+      <text x="348" y="433" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">What do prior entrants tell us?</text>
+
+      <!-- A3 → children trunk -->
+      <line x1="448" y1="420" x2="468" y2="420" stroke="#2D6A9F" stroke-width="1.5"/>
+      <line x1="468" y1="384" x2="468" y2="462" stroke="#2D6A9F" stroke-width="1.5"/>
+      <!-- A3a -->
+      <line x1="468" y1="384" x2="490" y2="384" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="492" y="372" width="358" height="26" rx="5" fill="#EBF3FB" stroke="#B8D4EE" stroke-width="1"/>
+      <text x="671" y="389" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">A3a — Simplilearn's US trajectory and what explains it</text>
+      <!-- A3b -->
+      <line x1="468" y1="420" x2="490" y2="420" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="492" y="408" width="358" height="26" rx="5" fill="#EBF3FB" stroke="#B8D4EE" stroke-width="1"/>
+      <text x="671" y="425" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">A3b — Great Learning's Northeastern partnership: replicable?</text>
+      <!-- A3c -->
+      <line x1="468" y1="462" x2="490" y2="462" stroke="#2D6A9F" stroke-width="1.5" marker-end="url(#arA)"/>
+      <rect x="492" y="450" width="358" height="26" rx="5" fill="#EBF3FB" stroke="#B8D4EE" stroke-width="1"/>
+      <text x="671" y="467" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">A3c/d — Non-Indian entrant successes and common failure modes</text>
+    </svg>
+  </div>
+
+  <!-- Accordion cards -->
+  <div class="l1-grid">
+    <div class="l1-card" id="a1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--a-color)">A1</span>
+        <span class="l1-question">Is the US professional upskilling market large enough to justify entry?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">A1a — TAM</div>
+          <p class="l2-q">What is the total addressable market for online professional upskilling in the US, and what is its growth trajectory?<span class="ws ws3">WS3</span></p>
+          <ul class="leaf-list">
+            <li>Market segments: tech upskilling, degree-equivalent, short courses, bootcamps, employer-sponsored L&D<span class="ws ws2">WS2</span></li>
+            <li>Which segments are growing, flat, or declining, and why?<span class="ws ws2">WS2</span><span class="ws ws3">WS3</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">A1b — SAM</div>
+          <p class="l2-q">What is the serviceable addressable market given upGrad's product type: degree-equivalent and tech/mgmt upskilling for working professionals?<span class="ws ws3">WS3</span></p>
+          <ul class="leaf-list">
+            <li>What learner profile does upGrad's product serve (age, income, prior education, employment status)?<span class="ws ws1">WS1</span></li>
+            <li>How large is that profile in the US, and what share currently uses online programs?<span class="ws ws3">WS3</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">A1c — SOM</div>
+          <p class="l2-q">What is the realistic serviceable obtainable market for upGrad in Years 1-3 given competitive density?<span class="ws ws3">WS3</span></p>
+          <ul class="leaf-list">
+            <li>Penetration rates for comparable late entrants in contested edtech markets<span class="ws ws2">WS2</span><span class="ws ws3">WS3</span></li>
+            <li>Scenarios: 0.5% / 1% / 2% SAM capture — are these internally consistent?<span class="ws ws3">WS3</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--a-color)">A2</span>
+        <span class="l1-question">Is the market structurally accessible to an Indian edtech entrant?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">A2a — Accreditation</div>
+          <p class="l2-q">Do upGrad's degree programs require US accreditation, or is brand and outcome signaling sufficient?<span class="ws ws2">WS2</span></p>
+          <ul class="leaf-list">
+            <li>Paths: DEAC, regional accreditation, or co-delivery with an accredited US institution<span class="ws ws2">WS2</span></li>
+            <li>Timeline and cost per accreditation path<span class="ws ws2">WS2</span></li>
+            <li>State-level authorization requirements for online programs targeting US residents<span class="ws ws2">WS2</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">A2b — CAC Economics</div>
+          <p class="l2-q">What is the CAC for comparable US edtech programs, and at what CAC/LTV ratio does unit economics break?<span class="ws ws3">WS3</span></p>
+          <ul class="leaf-list">
+            <li>CAC benchmarks: Simplilearn, Coursera degrees, bootcamps<span class="ws ws3">WS3</span></li>
+            <li>Structural factors that make US CAC higher than India: brand, language, media costs<span class="ws ws1">WS1</span><span class="ws ws3">WS3</span></li>
+            <li>LTV at upGrad's likely US price point ($3,000-$6,000)<span class="ws ws3">WS3</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">A2c — Brand Trust</div>
+          <p class="l2-q">Does "Indian edtech" carry negative connotation in the US post-BYJU's collapse?<span class="ws ws2">WS2</span></p>
+          <ul class="leaf-list">
+            <li>Is negative perception brand-specific (BYJU's) or sector-wide?<span class="ws ws2">WS2</span></li>
+            <li>What trust-building would take: co-branding, employer endorsement, outcome data?<span class="ws ws2">WS2</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">A2d — Incumbent Density</div>
+          <p class="l2-q">Who are the 5-8 primary competitors and what are their defensible moats?<span class="ws ws2">WS2</span></p>
+          <ul class="leaf-list">
+            <li>Moats: brand, employer relationships, accreditation, content quality, price<span class="ws ws2">WS2</span></li>
+            <li>Underserved sub-segments where incumbents are weak<span class="ws ws2">WS2</span></li>
+            <li>Competitive response risk from Coursera, LinkedIn Learning, Simplilearn<span class="ws ws2">WS2</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--a-color)">A3</span>
+        <span class="l1-question">What do comparable international entrants tell us?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">A3a</div>
+          <p class="l2-q">How has Simplilearn performed in the US, and what explains its trajectory?<span class="ws ws2">WS2</span></p>
+        </div>
+        <div class="l2">
+          <div class="l2-code">A3b</div>
+          <p class="l2-q">How has Great Learning used its Northeastern partnership, and is that model replicable for upGrad?<span class="ws ws2">WS2</span></p>
+        </div>
+        <div class="l2">
+          <div class="l2-code">A3c</div>
+          <p class="l2-q">Have any non-Indian international edtech players entered the US successfully, and what structural factors enabled that?<span class="ws ws2">WS2</span></p>
+        </div>
+        <div class="l2">
+          <div class="l2-code">A3d</div>
+          <p class="l2-q">What are the most common failure modes for foreign edtech entrants, and does upGrad exhibit those risk factors?<span class="ws ws2">WS2</span><span class="ws ws4">WS4</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     BRANCH B
+     ══════════════════════════════════════════════════════════ -->
+<section class="branch-section branch-b" id="branch-b">
+  <div class="branch-header">
+    <div class="branch-letter">B</div>
+    <div class="branch-meta">
+      <div class="branch-title" style="color:var(--b-color)">Is upGrad Capable of Capturing the Opportunity?</div>
+      <div class="branch-subtitle">Entry Viability · Product transferability, financial health, and organizational readiness</div>
+    </div>
+    <div class="branch-ws">
+      <span class="ws-chip ws1">WS1</span>
+      <span class="ws-chip ws4">WS4</span>
+    </div>
+  </div>
+
+  <!-- Flowchart B -->
+  <div class="flowchart-wrap">
+    <div class="flowchart-label">Branch B</div>
+    <svg viewBox="0 0 860 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+      <defs>
+        <marker id="arB" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto">
+          <path d="M0,0 L0,5 L7,2.5 z" fill="#2A7A5A"/>
+        </marker>
+      </defs>
+      <!-- ROOT -->
+      <rect x="10" y="165" width="180" height="50" rx="7" fill="#2A7A5A" stroke="none"/>
+      <text x="100" y="184" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#fff">Branch B</text>
+      <text x="100" y="202" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#a8d9c0">Is upGrad capable?</text>
+
+      <line x1="190" y1="190" x2="218" y2="190" stroke="#2A7A5A" stroke-width="1.5"/>
+      <line x1="218" y1="50" x2="218" y2="360" stroke="#2A7A5A" stroke-width="1.5"/>
+
+      <!-- B1 -->
+      <line x1="218" y1="50" x2="246" y2="50" stroke="#2A7A5A" stroke-width="1.5" marker-end="url(#arB)"/>
+      <rect x="248" y="28" width="200" height="44" rx="7" fill="#E8F5EF" stroke="#2A7A5A" stroke-width="1.5"/>
+      <text x="348" y="46" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#2A7A5A">B1 — Product Transfer</text>
+      <text x="348" y="63" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Is the product US-ready?</text>
+      <line x1="448" y1="50" x2="468" y2="50" stroke="#2A7A5A" stroke-width="1.5"/>
+      <line x1="468" y1="22" x2="468" y2="82" stroke="#2A7A5A" stroke-width="1.5"/>
+      <line x1="468" y1="22" x2="490" y2="22" stroke="#2A7A5A" stroke-width="1.5" marker-end="url(#arB)"/>
+      <rect x="492" y="10" width="358" height="26" rx="5" fill="#E8F5EF" stroke="#A8D9C0" stroke-width="1"/>
+      <text x="671" y="27" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">B1a — Delivery model: async video, mentor support, placement</text>
+      <line x1="468" y1="82" x2="490" y2="82" stroke="#2A7A5A" stroke-width="1.5" marker-end="url(#arB)"/>
+      <rect x="492" y="70" width="358" height="26" rx="5" fill="#E8F5EF" stroke="#A8D9C0" stroke-width="1"/>
+      <text x="671" y="87" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">B1b — Pricing: $3k-$6k positioning, ISA model, employer channels</text>
+
+      <!-- B2 -->
+      <line x1="218" y1="190" x2="246" y2="190" stroke="#2A7A5A" stroke-width="1.5" marker-end="url(#arB)"/>
+      <rect x="248" y="168" width="200" height="44" rx="7" fill="#E8F5EF" stroke="#2A7A5A" stroke-width="1.5"/>
+      <text x="348" y="186" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#2A7A5A">B2 — Financial Health</text>
+      <text x="348" y="203" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Stable enough to expand?</text>
+      <line x1="448" y1="190" x2="468" y2="190" stroke="#2A7A5A" stroke-width="1.5"/>
+      <line x1="468" y1="152" x2="468" y2="228" stroke="#2A7A5A" stroke-width="1.5"/>
+      <line x1="468" y1="152" x2="490" y2="152" stroke="#2A7A5A" stroke-width="1.5" marker-end="url(#arB)"/>
+      <rect x="492" y="140" width="358" height="26" rx="5" fill="#E8F5EF" stroke="#A8D9C0" stroke-width="1"/>
+      <text x="671" y="157" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">B2a — Core India business stability: EBITDA, runway, growth ceiling</text>
+      <line x1="468" y1="228" x2="490" y2="228" stroke="#2A7A5A" stroke-width="1.5" marker-end="url(#arB)"/>
+      <rect x="492" y="216" width="358" height="26" rx="5" fill="#E8F5EF" stroke="#A8D9C0" stroke-width="1"/>
+      <text x="671" y="233" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">B2b — Governance track record: acquisitions, founder control, reporting</text>
+
+      <!-- B3 -->
+      <line x1="218" y1="340" x2="246" y2="340" stroke="#2A7A5A" stroke-width="1.5" marker-end="url(#arB)"/>
+      <rect x="248" y="318" width="200" height="44" rx="7" fill="#E8F5EF" stroke="#2A7A5A" stroke-width="1.5"/>
+      <text x="348" y="336" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#2A7A5A">B3 — Capabilities</text>
+      <text x="348" y="353" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Right team to execute in US?</text>
+      <line x1="448" y1="340" x2="468" y2="340" stroke="#2A7A5A" stroke-width="1.5"/>
+      <line x1="468" y1="308" x2="468" y2="372" stroke="#2A7A5A" stroke-width="1.5"/>
+      <line x1="468" y1="308" x2="490" y2="308" stroke="#2A7A5A" stroke-width="1.5" marker-end="url(#arB)"/>
+      <rect x="492" y="296" width="358" height="26" rx="5" fill="#E8F5EF" stroke="#A8D9C0" stroke-width="1"/>
+      <text x="671" y="313" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">B3a — Existing US footprint: partnerships, KnowledgeHut reach</text>
+      <line x1="468" y1="372" x2="490" y2="372" stroke="#2A7A5A" stroke-width="1.5" marker-end="url(#arB)"/>
+      <rect x="492" y="360" width="358" height="26" rx="5" fill="#E8F5EF" stroke="#A8D9C0" stroke-width="1"/>
+      <text x="671" y="377" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">B3b — Capability gaps: regulatory, BD relationships, English content</text>
+    </svg>
+  </div>
+
+  <div class="l1-grid">
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--b-color)">B1</span>
+        <span class="l1-question">Is upGrad's core product transferable to the US context?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">B1a — Delivery Model</div>
+          <p class="l2-q">Does upGrad's model (async video, mentor support, placement assistance) meet US learner expectations?<span class="ws ws1">WS1</span></p>
+          <ul class="leaf-list">
+            <li>How much curriculum localization is required (data science, management content)?<span class="ws ws1">WS1</span></li>
+            <li>Does the placement/outcome-guarantee model work where employer relationships must be built from scratch?<span class="ws ws1">WS1</span></li>
+            <li>Does the mentor model scale to US time zones at US labor costs?<span class="ws ws1">WS1</span><span class="ws ws3">WS3</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">B1b — Pricing</div>
+          <p class="l2-q">Can upGrad price at $3,000-$6,000 and be perceived as value, or neither, relative to US alternatives?<span class="ws ws1">WS1</span><span class="ws ws2">WS2</span></p>
+          <ul class="leaf-list">
+            <li>Does the ISA model translate given different US regulatory treatment and salary norms?<span class="ws ws1">WS1</span></li>
+            <li>What employer-sponsored or tuition reimbursement channels could upGrad access?<span class="ws ws1">WS1</span><span class="ws ws2">WS2</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--b-color)">B2</span>
+        <span class="l1-question">Is upGrad financially healthy enough to sustain a US expansion?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">B2a — Core Business Stability</div>
+          <p class="l2-q">Is the India business stable enough to fund a multi-year international expansion?<span class="ws ws1">WS1</span><span class="ws ws4">WS4</span></p>
+          <ul class="leaf-list">
+            <li>Is FY2025 EBITDA-positive status durable, or a one-time cost-cut result?<span class="ws ws1">WS1</span></li>
+            <li>Current cash runway and capital available for international deployment<span class="ws ws1">WS1</span><span class="ws ws4">WS4</span></li>
+            <li>Is 6% revenue growth (FY2024 to FY2025) stabilization or a growth ceiling?<span class="ws ws1">WS1</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">B2b — Governance Track Record</div>
+          <p class="l2-q">Does upGrad's governance and track record inspire confidence?<span class="ws ws4">WS4</span></p>
+          <ul class="leaf-list">
+            <li>How have prior international moves (UK, KnowledgeHut) performed?<span class="ws ws1">WS1</span></li>
+            <li>Founder-control structure and governance risk for a minority-stake fund<span class="ws ws4">WS4</span></li>
+            <li>Does the 10+ acquisition spree suggest execution overstretch?<span class="ws ws1">WS1</span><span class="ws ws4">WS4</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--b-color)">B3</span>
+        <span class="l1-question">Does upGrad have the right capabilities to execute in the US?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">B3a — Existing US Footprint</div>
+          <p class="l2-q">Does upGrad have any existing US relationships or learner base that reduce cold-start risk?<span class="ws ws1">WS1</span></p>
+          <ul class="leaf-list">
+            <li>What do ~50 claimed US university partnerships consist of: co-delivery, co-branding, or loose referral?<span class="ws ws1">WS1</span></li>
+            <li>Does KnowledgeHut's US presence provide any leverageable infrastructure?<span class="ws ws1">WS1</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">B3b — Capability Gaps</div>
+          <p class="l2-q">What organizational capabilities would upGrad need to build that it does not currently have?<span class="ws ws1">WS1</span><span class="ws ws4">WS4</span></p>
+          <ul class="leaf-list">
+            <li>US regulatory and compliance expertise<span class="ws ws1">WS1</span></li>
+            <li>US employer and corporate business development relationships<span class="ws ws1">WS1</span></li>
+            <li>English-first content and student success infrastructure at scale<span class="ws ws1">WS1</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     BRANCH C
+     ══════════════════════════════════════════════════════════ -->
+<section class="branch-section branch-c" id="branch-c">
+  <div class="branch-header">
+    <div class="branch-letter">C</div>
+    <div class="branch-meta">
+      <div class="branch-title" style="color:var(--c-color)">Does the JV Structure Make Sense as an Investment Vehicle?</div>
+      <div class="branch-subtitle">Investment Decision · Value exchange, capital requirement, return profile, and JV-specific risk</div>
+    </div>
+    <div class="branch-ws">
+      <span class="ws-chip ws4">WS4</span>
+    </div>
+  </div>
+
+  <!-- Flowchart C -->
+  <div class="flowchart-wrap">
+    <div class="flowchart-label">Branch C</div>
+    <svg viewBox="0 0 860 470" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+      <defs>
+        <marker id="arC" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto">
+          <path d="M0,0 L0,5 L7,2.5 z" fill="#8B5E3C"/>
+        </marker>
+      </defs>
+      <!-- ROOT -->
+      <rect x="10" y="200" width="180" height="50" rx="7" fill="#8B5E3C" stroke="none"/>
+      <text x="100" y="219" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#fff">Branch C</text>
+      <text x="100" y="237" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#f0dcc8">Is the JV deal sound?</text>
+
+      <line x1="190" y1="225" x2="218" y2="225" stroke="#8B5E3C" stroke-width="1.5"/>
+      <line x1="218" y1="50" x2="218" y2="420" stroke="#8B5E3C" stroke-width="1.5"/>
+
+      <!-- C1 -->
+      <line x1="218" y1="50" x2="246" y2="50" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="248" y="28" width="200" height="44" rx="7" fill="#FAF3EC" stroke="#8B5E3C" stroke-width="1.5"/>
+      <text x="348" y="46" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#8B5E3C">C1 — Value Exchange</text>
+      <text x="348" y="63" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Is the deal fair to both parties?</text>
+      <line x1="448" y1="50" x2="468" y2="50" stroke="#8B5E3C" stroke-width="1.5"/>
+      <line x1="468" y1="22" x2="468" y2="82" stroke="#8B5E3C" stroke-width="1.5"/>
+      <line x1="468" y1="22" x2="490" y2="22" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="492" y="10" width="358" height="26" rx="5" fill="#FAF3EC" stroke="#E8D5C0" stroke-width="1"/>
+      <text x="671" y="27" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">C1a — upGrad contributes: platform, curriculum, KnowledgeHut, UK ops</text>
+      <line x1="468" y1="82" x2="490" y2="82" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="492" y="70" width="358" height="26" rx="5" fill="#FAF3EC" stroke="#E8D5C0" stroke-width="1"/>
+      <text x="671" y="87" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">C1b — Fund contributes: capital, US network, accreditation pathways</text>
+
+      <!-- C2 -->
+      <line x1="218" y1="225" x2="246" y2="225" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="248" y="203" width="200" height="44" rx="7" fill="#FAF3EC" stroke="#8B5E3C" stroke-width="1.5"/>
+      <text x="348" y="221" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#8B5E3C">C2 — Capital Reasonableness</text>
+      <text x="348" y="238" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Risk/return justified?</text>
+      <line x1="448" y1="225" x2="468" y2="225" stroke="#8B5E3C" stroke-width="1.5"/>
+      <line x1="468" y1="177" x2="468" y2="273" stroke="#8B5E3C" stroke-width="1.5"/>
+      <line x1="468" y1="177" x2="490" y2="177" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="492" y="165" width="358" height="26" rx="5" fill="#FAF3EC" stroke="#E8D5C0" stroke-width="1"/>
+      <text x="671" y="182" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">C2a — 3-year capital scenarios: conservative, base, upside</text>
+      <line x1="468" y1="225" x2="490" y2="225" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="492" y="213" width="358" height="26" rx="5" fill="#FAF3EC" stroke="#E8D5C0" stroke-width="1"/>
+      <text x="671" y="230" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">C2b — Return profile: IRR required vs. base-case Year 5</text>
+      <line x1="468" y1="273" x2="490" y2="273" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="492" y="261" width="358" height="26" rx="5" fill="#FAF3EC" stroke="#E8D5C0" stroke-width="1"/>
+      <text x="671" y="278" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">C2c — Milestone gates: Year 1 CAC, NPS, placement rate</text>
+
+      <!-- C3 -->
+      <line x1="218" y1="400" x2="246" y2="400" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="248" y="378" width="200" height="44" rx="7" fill="#FAF3EC" stroke="#8B5E3C" stroke-width="1.5"/>
+      <text x="348" y="396" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#8B5E3C">C3 — JV-Specific Risks</text>
+      <text x="348" y="413" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Beyond market risk?</text>
+      <line x1="448" y1="400" x2="468" y2="400" stroke="#8B5E3C" stroke-width="1.5"/>
+      <line x1="468" y1="330" x2="468" y2="440" stroke="#8B5E3C" stroke-width="1.5"/>
+      <line x1="468" y1="330" x2="490" y2="330" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="492" y="318" width="358" height="26" rx="5" fill="#FAF3EC" stroke="#E8D5C0" stroke-width="1"/>
+      <text x="671" y="335" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">C3a — Governance: founder override protection, board rights</text>
+      <line x1="468" y1="368" x2="490" y2="368" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="492" y="356" width="358" height="26" rx="5" fill="#FAF3EC" stroke="#E8D5C0" stroke-width="1"/>
+      <text x="671" y="373" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">C3b — IP ownership: US entity vs. upGrad India retention</text>
+      <line x1="468" y1="406" x2="490" y2="406" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="492" y="394" width="358" height="26" rx="5" fill="#FAF3EC" stroke="#E8D5C0" stroke-width="1"/>
+      <text x="671" y="411" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">C3c — Currency and repatriation in India-US-Singapore structure</text>
+      <line x1="468" y1="440" x2="490" y2="440" stroke="#8B5E3C" stroke-width="1.5" marker-end="url(#arC)"/>
+      <rect x="492" y="428" width="358" height="26" rx="5" fill="#FAF3EC" stroke="#E8D5C0" stroke-width="1"/>
+      <text x="671" y="445" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">C3d — Contagion risk if upGrad India deteriorates</text>
+    </svg>
+  </div>
+
+  <div class="l1-grid">
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--c-color)">C1</span>
+        <span class="l1-question">What does each party contribute, and is it a fair exchange?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">C1a — upGrad's Contribution</div>
+          <ul class="leaf-list">
+            <li>Product: curriculum, platform, delivery model<span class="ws ws1">WS1</span></li>
+            <li>Operational know-how: learner acquisition, mentor model, placement partnerships<span class="ws ws1">WS1</span></li>
+            <li>International infrastructure: UK ops, ~50 US university partnerships, KnowledgeHut reach<span class="ws ws1">WS1</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">C1b — Fund's Contribution</div>
+          <p class="l2-q">What does the Singapore fund contribute beyond capital?<span class="ws ws4">WS4</span></p>
+          <ul class="leaf-list">
+            <li>US network access: institutional relationships, employer contacts, co-investors<span class="ws ws4">WS4</span></li>
+            <li>Accreditation pathways or US university relationships upGrad cannot access independently<span class="ws ws4">WS4</span></li>
+            <li>If capital-only: does the JV structure justify complexity vs. a direct minority stake?<span class="ws ws4">WS4</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--c-color)">C2</span>
+        <span class="l1-question">Is the capital requirement reasonable for the risk and return?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">C2a — Capital Scenarios</div>
+          <p class="l2-q">Realistic 3-year capital requirement under conservative, base, and upside scenarios<span class="ws ws3">WS3</span><span class="ws ws4">WS4</span></p>
+          <ul class="leaf-list">
+            <li>Major cost drivers: CAC, localization, US team, university rev share, regulatory<span class="ws ws3">WS3</span></li>
+            <li>Fund commitment under each scenario assuming 30-49% JV economic interest<span class="ws ws4">WS4</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">C2b — Return Profile</div>
+          <p class="l2-q">What IRR does the fund require for an edtech emerging-market JV of this risk profile?<span class="ws ws4">WS4</span></p>
+          <ul class="leaf-list">
+            <li>Base-case Year 5 revenue and margin: does it support the required IRR?<span class="ws ws3">WS3</span><span class="ws ws4">WS4</span></li>
+            <li>CAC sensitivity: what level destroys the return case entirely?<span class="ws ws3">WS3</span><span class="ws ws4">WS4</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">C2c — Milestone Protection</div>
+          <ul class="leaf-list">
+            <li>Year 1 gate metrics: cohort size, CAC, learner NPS, employer placement rate<span class="ws ws4">WS4</span></li>
+            <li>Exit paths: strategic acquisition, secondary sale, or IPO within 5-7 years<span class="ws ws4">WS4</span></li>
+            <li>Downside protections: liquidation preference, anti-dilution, information rights<span class="ws ws4">WS4</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--c-color)">C3</span>
+        <span class="l1-question">What are the JV-specific risks beyond market risk?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">C3a</div>
+          <p class="l2-q">What governance structure prevents founder override of fund interests in key decisions?<span class="ws ws4">WS4</span></p>
+        </div>
+        <div class="l2">
+          <div class="l2-code">C3b</div>
+          <p class="l2-q">IP ownership: does the US entity own the curriculum and platform, or does upGrad India retain it?<span class="ws ws4">WS4</span></p>
+        </div>
+        <div class="l2">
+          <div class="l2-code">C3c</div>
+          <p class="l2-q">Currency and repatriation risks in the India-US-Singapore three-way structure<span class="ws ws4">WS4</span></p>
+        </div>
+        <div class="l2">
+          <div class="l2-code">C3d</div>
+          <p class="l2-q">What happens if upGrad India deteriorates: does the JV have operational independence, or does it collapse with the parent?<span class="ws ws4">WS4</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     BRANCH D
+     ══════════════════════════════════════════════════════════ -->
+<section class="branch-section branch-d" id="branch-d">
+  <div class="branch-header">
+    <div class="branch-letter">D</div>
+    <div class="branch-meta">
+      <div class="branch-title" style="color:var(--d-color)">If Invest: What Exactly Should the Fund Do?</div>
+      <div class="branch-subtitle">Entry Strategy · Segment selection, entry model, and Year 1-3 sequencing</div>
+    </div>
+    <div class="branch-ws">
+      <span class="ws-chip ws2">WS2</span>
+      <span class="ws-chip ws3">WS3</span>
+      <span class="ws-chip ws4">WS4</span>
+    </div>
+  </div>
+
+  <!-- Flowchart D -->
+  <div class="flowchart-wrap">
+    <div class="flowchart-label">Branch D</div>
+    <svg viewBox="0 0 860 560" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+      <defs>
+        <marker id="arD" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto">
+          <path d="M0,0 L0,5 L7,2.5 z" fill="#5E3D8B"/>
+        </marker>
+      </defs>
+      <!-- ROOT -->
+      <rect x="10" y="240" width="180" height="50" rx="7" fill="#5E3D8B" stroke="none"/>
+      <text x="100" y="259" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#fff">Branch D</text>
+      <text x="100" y="277" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#d5c0e8">If invest: how?</text>
+
+      <line x1="190" y1="265" x2="218" y2="265" stroke="#5E3D8B" stroke-width="1.5"/>
+      <line x1="218" y1="50" x2="218" y2="500" stroke="#5E3D8B" stroke-width="1.5"/>
+
+      <!-- D1 -->
+      <line x1="218" y1="50" x2="246" y2="50" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="248" y="28" width="200" height="44" rx="7" fill="#F3EEFA" stroke="#5E3D8B" stroke-width="1.5"/>
+      <text x="348" y="46" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#5E3D8B">D1 — Segment Selection</text>
+      <text x="348" y="63" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Which US entry point?</text>
+      <line x1="448" y1="50" x2="468" y2="50" stroke="#5E3D8B" stroke-width="1.5"/>
+      <line x1="468" y1="22" x2="468" y2="82" stroke="#5E3D8B" stroke-width="1.5"/>
+      <line x1="468" y1="22" x2="490" y2="22" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="492" y="10" width="358" height="26" rx="5" fill="#F3EEFA" stroke="#D5C0E8" stroke-width="1"/>
+      <text x="671" y="27" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">D1a — Tech upskilling: data science, SWE, AI (most competitive)</text>
+      <line x1="468" y1="50" x2="490" y2="50" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="492" y="38" width="358" height="26" rx="5" fill="#F3EEFA" stroke="#D5C0E8" stroke-width="1"/>
+      <text x="671" y="55" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">D1b — Management/MBA-equiv: $5k-$15k, needs US accreditation</text>
+      <line x1="468" y1="82" x2="490" y2="82" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="492" y="70" width="358" height="26" rx="5" fill="#F3EEFA" stroke="#D5C0E8" stroke-width="1"/>
+      <text x="671" y="87" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">D1c — Placement-linked bootcamp: ISA model, state regulation varies</text>
+
+      <!-- D2 -->
+      <line x1="218" y1="265" x2="246" y2="265" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="248" y="243" width="200" height="44" rx="7" fill="#F3EEFA" stroke="#5E3D8B" stroke-width="1.5"/>
+      <text x="348" y="261" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#5E3D8B">D2 — Entry Model</text>
+      <text x="348" y="278" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Which model to enter?</text>
+      <line x1="448" y1="265" x2="468" y2="265" stroke="#5E3D8B" stroke-width="1.5"/>
+      <line x1="468" y1="192" x2="468" y2="344" stroke="#5E3D8B" stroke-width="1.5"/>
+      <line x1="468" y1="192" x2="490" y2="192" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="492" y="180" width="358" height="26" rx="5" fill="#F3EEFA" stroke="#D5C0E8" stroke-width="1"/>
+      <text x="671" y="197" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">D2a — Organic D2C: no US partner, high CAC, brand trust challenge</text>
+      <line x1="468" y1="230" x2="490" y2="230" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="492" y="218" width="358" height="26" rx="5" fill="#F3EEFA" stroke="#D5C0E8" stroke-width="1"/>
+      <text x="671" y="235" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">D2b — US university partnership: co-branded delivery, rev share</text>
+      <line x1="468" y1="268" x2="490" y2="268" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="492" y="256" width="358" height="26" rx="5" fill="#F3EEFA" stroke="#D5C0E8" stroke-width="1"/>
+      <text x="671" y="273" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">D2c — Acquisition: existing US edtech player, $5M-$30M range</text>
+      <line x1="468" y1="344" x2="490" y2="344" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="492" y="332" width="358" height="26" rx="5" fill="#F3EEFA" stroke="#D5C0E8" stroke-width="1"/>
+      <text x="671" y="349" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">D2d — B2B / White-label: sell to employers or community colleges</text>
+
+      <!-- D3 -->
+      <line x1="218" y1="480" x2="246" y2="480" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="248" y="458" width="200" height="44" rx="7" fill="#F3EEFA" stroke="#5E3D8B" stroke-width="1.5"/>
+      <text x="348" y="476" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#5E3D8B">D3 — Sequencing</text>
+      <text x="348" y="493" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Year 1 to Year 3 roadmap</text>
+      <line x1="448" y1="480" x2="468" y2="480" stroke="#5E3D8B" stroke-width="1.5"/>
+      <line x1="468" y1="442" x2="468" y2="520" stroke="#5E3D8B" stroke-width="1.5"/>
+      <line x1="468" y1="442" x2="490" y2="442" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="492" y="430" width="358" height="26" rx="5" fill="#F3EEFA" stroke="#D5C0E8" stroke-width="1"/>
+      <text x="671" y="447" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">D3a — Pre-launch checklist: regulatory, partnerships, curriculum, team</text>
+      <line x1="468" y1="480" x2="490" y2="480" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="492" y="468" width="358" height="26" rx="5" fill="#F3EEFA" stroke="#D5C0E8" stroke-width="1"/>
+      <text x="671" y="485" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">D3b — Competitive window: first-mover vs. wait-and-watch risk</text>
+      <line x1="468" y1="520" x2="490" y2="520" stroke="#5E3D8B" stroke-width="1.5" marker-end="url(#arD)"/>
+      <rect x="492" y="508" width="358" height="26" rx="5" fill="#F3EEFA" stroke="#D5C0E8" stroke-width="1"/>
+      <text x="671" y="525" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">D3c — Year 1-3 roadmap: cohort targets, scale triggers, tranche 2</text>
+    </svg>
+  </div>
+
+  <div class="l1-grid">
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--d-color)">D1</span>
+        <span class="l1-question">Which US segment is the right entry point?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">D1a — Tech Upskilling</div>
+          <p class="l2-q">Data science, SWE, AI: highest demand signal but most competitive (Coursera, Udacity, bootcamps, community colleges).<span class="ws ws2">WS2</span></p>
+          <ul class="leaf-list">
+            <li>Does upGrad's content quality match US standards without significant localization?<span class="ws ws1">WS1</span></li>
+            <li>What employer relationships would validate upGrad credentials in US tech hiring?<span class="ws ws1">WS1</span><span class="ws ws2">WS2</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">D1b — Management/MBA-Equivalent</div>
+          <p class="l2-q">Higher ticket ($5,000-$15,000) but requires stronger accreditation or US university co-branding.<span class="ws ws2">WS2</span></p>
+          <ul class="leaf-list">
+            <li>Underserved working-professional segment that can't afford traditional MBA but needs more than a short course?<span class="ws ws2">WS2</span><span class="ws ws3">WS3</span></li>
+            <li>Does upGrad's Liverpool/Deakin model translate, or does a US learner require a US-named degree?<span class="ws ws1">WS1</span><span class="ws ws2">WS2</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">D1c — Placement-Linked Bootcamp (ISA)</div>
+          <p class="l2-q">High demand signal but ISA regulation varies significantly by US state.<span class="ws ws2">WS2</span></p>
+          <ul class="leaf-list">
+            <li>Which states are viable for an ISA-based model?<span class="ws ws2">WS2</span></li>
+            <li>Can upGrad build US employer hiring pipelines fast enough to make outcome guarantees credible?<span class="ws ws1">WS1</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--d-color)">D2</span>
+        <span class="l1-question">Which entry model is optimal given the fund's risk appetite?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">D2a — Organic D2C</div>
+          <p class="l2-q">Direct-to-consumer digital, no US institutional partner.<span class="ws ws3">WS3</span></p>
+          <ul class="leaf-list">
+            <li>Minimum viable marketing spend to test US demand<span class="ws ws3">WS3</span></li>
+            <li>How long before organic brand trust drives paid enrollment without institutional endorsement?<span class="ws ws2">WS2</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">D2b — US University Partnership</div>
+          <p class="l2-q">Co-branding or co-delivery with a US accredited institution.<span class="ws ws2">WS2</span></p>
+          <ul class="leaf-list">
+            <li>Which tier is realistic: R1 research, regional, or community college?<span class="ws ws2">WS2</span></li>
+            <li>What upGrad offers the partner: tech platform, content, learner acquisition, revenue share<span class="ws ws2">WS2</span></li>
+            <li>Does standard rev share preserve acceptable unit economics?<span class="ws ws3">WS3</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">D2c — Acquisition of US Edtech Player</div>
+          <p class="l2-q">Acquire an existing US company in the $5-30M range.<span class="ws ws2">WS2</span><span class="ws ws4">WS4</span></p>
+          <ul class="leaf-list">
+            <li>Candidates with existing learner base, employer relationships, or accreditation<span class="ws ws2">WS2</span><span class="ws ws4">WS4</span></li>
+            <li>Integration risk given upGrad's existing portfolio complexity<span class="ws ws4">WS4</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">D2d — B2B / White-Label Partnership</div>
+          <p class="l2-q">Sell to US employers or community colleges as a white-label workforce upskilling platform.<span class="ws ws1">WS1</span><span class="ws ws2">WS2</span><span class="ws ws3">WS3</span></p>
+          <ul class="leaf-list">
+            <li>Does upGrad's platform have enterprise features (SSO, LMS integration, reporting) to compete for B2B contracts?<span class="ws ws1">WS1</span></li>
+            <li>What sales cycle and contract size characterize B2B edtech in the US?<span class="ws ws2">WS2</span><span class="ws ws3">WS3</span></li>
+            <li>Does B2B avoid the CAC and brand-trust problems that block D2C entirely?<span class="ws ws3">WS3</span></li>
+            <li>Can employer relationships built under B2B contracts seed a later D2C or university-partnership channel?<span class="ws ws2">WS2</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--d-color)">D3</span>
+        <span class="l1-question">What is the right sequencing and timeline?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">D3a — Pre-Launch Requirements</div>
+          <p class="l2-q">What must be true before the US entity launches its first paid cohort?<span class="ws ws1">WS1</span><span class="ws ws4">WS4</span></p>
+          <ul class="leaf-list">
+            <li>Regulatory/authorization clearances<span class="ws ws2">WS2</span></li>
+            <li>Partnership agreement (university or B2B employer) signed<span class="ws ws4">WS4</span></li>
+            <li>Curriculum localized and reviewed<span class="ws ws1">WS1</span></li>
+            <li>US team hired and operational<span class="ws ws4">WS4</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">D3b — Competitive Window</div>
+          <p class="l2-q">Is there a first-mover advantage in the target segment, or is waiting lower-risk?<span class="ws ws2">WS2</span></p>
+          <ul class="leaf-list">
+            <li>Is Simplilearn or another Indian entrant likely to occupy the institutional partnership channel first?<span class="ws ws2">WS2</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">D3c — Year 1 to Year 3 Roadmap</div>
+          <ul class="leaf-list">
+            <li>Year 1: regulatory clearance, pilot cohort (X learners, Y CAC, Z NPS), first partnership executed<span class="ws ws4">WS4</span></li>
+            <li>Year 2: scale marketing, refine CAC/LTV, expand to second segment or geography<span class="ws ws3">WS3</span><span class="ws ws4">WS4</span></li>
+            <li>Year 3: path to contribution-positive unit economics, second tranche decision<span class="ws ws3">WS3</span><span class="ws ws4">WS4</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     BRANCH E
+     ══════════════════════════════════════════════════════════ -->
+<section class="branch-section branch-e" id="branch-e">
+  <div class="branch-header">
+    <div class="branch-letter">E</div>
+    <div class="branch-meta">
+      <div class="branch-title" style="color:var(--e-color)">If Pass: What Would Need to Change?</div>
+      <div class="branch-subtitle">Investment Decision · Pass conditions, flip-to-invest triggers, and cost of waiting</div>
+    </div>
+    <div class="branch-ws">
+      <span class="ws-chip ws2">WS2</span>
+      <span class="ws-chip ws4">WS4</span>
+    </div>
+  </div>
+
+  <!-- Flowchart E -->
+  <div class="flowchart-wrap">
+    <div class="flowchart-label">Branch E</div>
+    <svg viewBox="0 0 860 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+      <defs>
+        <marker id="arE" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto">
+          <path d="M0,0 L0,5 L7,2.5 z" fill="#8B3D3D"/>
+        </marker>
+      </defs>
+      <!-- ROOT -->
+      <rect x="10" y="210" width="180" height="50" rx="7" fill="#8B3D3D" stroke="none"/>
+      <text x="100" y="229" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#fff">Branch E</text>
+      <text x="100" y="247" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#e8c0c0">If pass: what changes?</text>
+
+      <line x1="190" y1="235" x2="218" y2="235" stroke="#8B3D3D" stroke-width="1.5"/>
+      <line x1="218" y1="80" x2="218" y2="430" stroke="#8B3D3D" stroke-width="1.5"/>
+
+      <!-- E1: centered at y=80 -->
+      <line x1="218" y1="80" x2="246" y2="80" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="248" y="58" width="200" height="44" rx="7" fill="#FAEEEE" stroke="#8B3D3D" stroke-width="1.5"/>
+      <text x="348" y="76" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#8B3D3D">E1 — Pass Conditions</text>
+      <text x="348" y="93" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Why pass today?</text>
+      <line x1="448" y1="80" x2="468" y2="80" stroke="#8B3D3D" stroke-width="1.5"/>
+      <!-- E1 mini-trunk: 4 children at y=30,68,106,144 -->
+      <line x1="468" y1="30" x2="468" y2="144" stroke="#8B3D3D" stroke-width="1.5"/>
+      <line x1="468" y1="30" x2="490" y2="30" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="492" y="18" width="358" height="26" rx="5" fill="#FAEEEE" stroke="#E8C0C0" stroke-width="1"/>
+      <text x="671" y="35" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">E1a — CAC structurally insurmountable: unit economics never close</text>
+      <line x1="468" y1="68" x2="490" y2="68" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="492" y="56" width="358" height="26" rx="5" fill="#FAEEEE" stroke="#E8C0C0" stroke-width="1"/>
+      <text x="671" y="73" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">E1b — Accreditation path too slow/costly within investment horizon</text>
+      <line x1="468" y1="106" x2="490" y2="106" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="492" y="94" width="358" height="26" rx="5" fill="#FAEEEE" stroke="#E8C0C0" stroke-width="1"/>
+      <text x="671" y="111" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">E1c — upGrad India too fragile to sustain JV even with new capital</text>
+      <line x1="468" y1="144" x2="490" y2="144" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="492" y="132" width="358" height="26" rx="5" fill="#FAEEEE" stroke="#E8C0C0" stroke-width="1"/>
+      <text x="671" y="149" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">E1d — US incumbents so entrenched no entry strategy justifies investment</text>
+
+      <!-- E2: centered at y=255 -->
+      <line x1="218" y1="255" x2="246" y2="255" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="248" y="233" width="200" height="44" rx="7" fill="#FAEEEE" stroke="#8B3D3D" stroke-width="1.5"/>
+      <text x="348" y="251" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#8B3D3D">E2 — Flip Conditions</text>
+      <text x="348" y="268" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">What changes the verdict?</text>
+      <line x1="448" y1="255" x2="468" y2="255" stroke="#8B3D3D" stroke-width="1.5"/>
+      <line x1="468" y1="217" x2="468" y2="293" stroke="#8B3D3D" stroke-width="1.5"/>
+      <line x1="468" y1="217" x2="490" y2="217" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="492" y="205" width="358" height="26" rx="5" fill="#FAEEEE" stroke="#E8C0C0" stroke-width="1"/>
+      <text x="671" y="222" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">E2a — upGrad-side: financial turnaround, product localization proven</text>
+      <line x1="468" y1="255" x2="490" y2="255" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="492" y="243" width="358" height="26" rx="5" fill="#FAEEEE" stroke="#E8C0C0" stroke-width="1"/>
+      <text x="671" y="260" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">E2b — Market-side: incumbent weakens, new employer segment opens</text>
+      <line x1="468" y1="293" x2="490" y2="293" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="492" y="281" width="358" height="26" rx="5" fill="#FAEEEE" stroke="#E8C0C0" stroke-width="1"/>
+      <text x="671" y="298" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">E2c — Fund-side: right US partner or co-investor de-risks entry</text>
+
+      <!-- E3: centered at y=430 -->
+      <line x1="218" y1="430" x2="246" y2="430" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="248" y="408" width="200" height="44" rx="7" fill="#FAEEEE" stroke="#8B3D3D" stroke-width="1.5"/>
+      <text x="348" y="426" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#8B3D3D">E3 — Cost of Waiting</text>
+      <text x="348" y="443" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#4A4842">Is delay risky or prudent?</text>
+      <line x1="448" y1="430" x2="468" y2="430" stroke="#8B3D3D" stroke-width="1.5"/>
+      <line x1="468" y1="398" x2="468" y2="460" stroke="#8B3D3D" stroke-width="1.5"/>
+      <line x1="468" y1="398" x2="490" y2="398" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="492" y="386" width="358" height="26" rx="5" fill="#FAEEEE" stroke="#E8C0C0" stroke-width="1"/>
+      <text x="671" y="403" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">E3a — Does waiting cede the institutional channel to Simplilearn?</text>
+      <line x1="468" y1="460" x2="490" y2="460" stroke="#8B3D3D" stroke-width="1.5" marker-end="url(#arE)"/>
+      <rect x="492" y="448" width="358" height="26" rx="5" fill="#FAEEEE" stroke="#E8C0C0" stroke-width="1"/>
+      <text x="671" y="465" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#1A1915">E3b — Structuring option: monitoring stake now, full JV on trigger</text>
+    </svg>
+  </div>
+
+  <div class="l1-grid">
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--e-color)">E1</span>
+        <span class="l1-question">What specific barriers make this a pass today?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">E1a</div>
+          <p class="l2-q">Is the CAC barrier structurally insurmountable: no combination of partnership and brand-building reaches viable unit economics within 3 years?<span class="ws ws3">WS3</span></p>
+        </div>
+        <div class="l2">
+          <div class="l2-code">E1b</div>
+          <p class="l2-q">Is the accreditation path too slow or costly to produce a competitive product within the investment horizon?<span class="ws ws2">WS2</span></p>
+        </div>
+        <div class="l2">
+          <div class="l2-code">E1c</div>
+          <p class="l2-q">Is upGrad India too financially fragile to sustain the JV even with fund capital infusion?<span class="ws ws1">WS1</span><span class="ws ws4">WS4</span></p>
+        </div>
+        <div class="l2">
+          <div class="l2-code">E1d</div>
+          <p class="l2-q">Are American companies already so well-established that any entry strategy will fail to make enough money to justify our investment?<span class="ws ws2">WS2</span><span class="ws ws4">WS4</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--e-color)">E2</span>
+        <span class="l1-question">What conditions would flip the verdict from pass to invest?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">upGrad-side</div>
+          <ul class="leaf-list">
+            <li>2 consecutive years of India profitability<span class="ws ws4">WS4</span></li>
+            <li>Signed US university deal with a meaningful institutional partner<span class="ws ws4">WS4</span></li>
+            <li>Demonstrated US learner demand via independently run pilot<span class="ws ws4">WS4</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">Market-side</div>
+          <ul class="leaf-list">
+            <li>Incumbent weakness or market exit creating a gap<span class="ws ws2">WS2</span></li>
+            <li>Regulatory simplification around ISA or online accreditation<span class="ws ws2">WS2</span></li>
+            <li>Surge in employer-sponsored upskilling budgets post-AI disruption<span class="ws ws2">WS2</span></li>
+          </ul>
+        </div>
+        <div class="l2">
+          <div class="l2-code">Fund-side</div>
+          <ul class="leaf-list">
+            <li>Lower required IRR driven by portfolio rebalancing<span class="ws ws4">WS4</span></li>
+            <li>Co-investor sharing risk and reducing the fund's exposure<span class="ws ws4">WS4</span></li>
+            <li>Longer holding period tolerance reducing the IRR hurdle<span class="ws ws4">WS4</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="l1-card">
+      <div class="l1-header" onclick="toggle(this)">
+        <span class="l1-code" style="color:var(--e-color)">E3</span>
+        <span class="l1-question">What is the cost of waiting vs. acting now?</span>
+        <span class="l1-chevron">▾</span>
+      </div>
+      <div class="l1-body">
+        <div class="l2">
+          <div class="l2-code">Competitive clock</div>
+          <p class="l2-q">If the fund waits 12-18 months, what competitive dynamics shift, and in whose favor?<span class="ws ws2">WS2</span></p>
+        </div>
+        <div class="l2">
+          <div class="l2-code">upGrad trajectory</div>
+          <p class="l2-q">Does upGrad's financial position improve or deteriorate over the next 12-18 months without fund capital?<span class="ws ws1">WS1</span><span class="ws ws4">WS4</span></p>
+        </div>
+        <div class="l2">
+          <div class="l2-code">Optionality vs. delay</div>
+          <p class="l2-q">Is there a scenario where waiting preserves optionality (let upGrad prove out a pilot independently first) vs. a scenario where delay forfeits the opportunity entirely?<span class="ws ws4">WS4</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Workstream map ───────────────────────────────────────────── -->
+<div class="ws-map">
+  <h3>Workstream Ownership</h3>
+  <table class="ws-table">
+    <thead>
+      <tr>
+        <th>Branch</th>
+        <th>Topic</th>
+        <th>Primary Owner</th>
+        <th>Secondary</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--a-color)">A</td>
+        <td>US Opportunity (Viability)</td>
+        <td><span class="ws ws2">WS2</span> Market + Competitors</td>
+        <td><span class="ws ws3">WS3</span> Sizing</td>
+      </tr>
+      <tr>
+        <td style="color:var(--b-color)">B</td>
+        <td>upGrad Capability</td>
+        <td><span class="ws ws1">WS1</span> Company + Transferability</td>
+        <td><span class="ws ws4">WS4</span> Governance</td>
+      </tr>
+      <tr>
+        <td style="color:var(--c-color)">C</td>
+        <td>JV Structure</td>
+        <td><span class="ws ws4">WS4</span> Investment Decision</td>
+        <td><span class="ws ws3">WS3</span> Financial Model</td>
+      </tr>
+      <tr>
+        <td style="color:var(--d-color)">D</td>
+        <td>If Invest: Segment, Model, Timeline</td>
+        <td><span class="ws ws2">WS2</span> Segment + Model</td>
+        <td><span class="ws ws3">WS3</span> Sizing, <span class="ws ws4">WS4</span> Milestones</td>
+      </tr>
+      <tr>
+        <td style="color:var(--e-color)">E</td>
+        <td>If Pass: Conditions</td>
+        <td><span class="ws ws4">WS4</span> Decision</td>
+        <td><span class="ws ws2">WS2</span> Market Conditions</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- /wrap -->
+</main>
+
+<!-- ── Footer ──────────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="footer-text">Group Orion · WS1 Issue Tree · Role 3 — Dylan &amp; Ari</span>
+    <span class="footer-text">AperioHub · June 2026 Cohort</span>
+  </div>
+</footer>
+
+<script>
+function toggle(headerEl) {
+  const card = headerEl.closest('.l1-card');
+  card.classList.toggle('open');
+}
+
+function jumpTo(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Account for two sticky bars: site-header (56px) + branch-nav (44px) + small buffer
+  const stickyHeight = document.querySelector('.site-header').offsetHeight
+                     + document.querySelector('.branch-nav').offsetHeight
+                     + 16;
+  const top = el.getBoundingClientRect().top + window.pageYOffset - stickyHeight;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+// Open first card in each branch by default
+document.querySelectorAll('.l1-card:first-child').forEach(c => c.classList.add('open'));
+</script>
+</body>
+</html>
